@@ -81,18 +81,18 @@ public class Sheet extends Observable implements Environment {
 
 
 
-    public void setSlot(String name, Slot slot) {
+    private void setSlot(String name, Slot slot) {
         slotMap.put(name, slot);
     }
 
     public void setSlotValue(String name, String value) {
+
         if (value == null || value.length() == 0) {
             setSlot(name, new BlankSlot());
             setChanged();
             notifyObservers();
             return;
         }
-        //The first character denotes the type of slot
         char firstCharacter = value.charAt(0);
         try {
             switch (firstCharacter) {
@@ -100,13 +100,12 @@ public class Sheet extends Observable implements Environment {
                     setSlot(name, new CommentSlot(value));
                     break;
                 case '=':
-                    setSlot(name, new CircleSlot()); //The edited slot is set to an exceptionslot
-                    String expressionString = value.substring(1); // Removes the first character ("=")
+                    setSlot(name, new CircleSlot());
+                    String expressionString = value.substring(1);
                     ExprParser parser = new ExprParser();
                     Expr expression = parser.build(expressionString);
                     expression.value(this);
 
-                    //Test first with exceptionslot
                     setSlot(name, new ExprSlot(expression));
                     break;
                 default:
