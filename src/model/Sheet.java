@@ -13,50 +13,46 @@ import java.util.Observable;
 
 @SuppressWarnings("deprecation")
 public class Sheet extends Observable implements Environment {
-    private static final int ROWS = 10, COLUMNS = 8;
-    private StringSlot currentSlot;
-    private String currentSlotName;
-    private Map<String,StringSlot> map;
 
-    public Sheet() {
-        map= new HashMap<>();
-        currentSlotName="A1";
-        for (char ch='A';ch<'A'+COLUMNS;ch++){
-            for (int i=1 ;i<= ROWS;i++){
-                String name= ch+String.valueOf(i);
-                map.put(name,new BlankSlot());
+
+    public final int ROWS, COLUMNS;
+    private String currentSlotName;
+    private Map<String, Slot> slotMap;
+
+    public Sheet(int ROWS, int COLUMNS) {
+        this.ROWS = ROWS;
+        this.COLUMNS = COLUMNS;
+        currentSlotName = "A1";
+
+        slotMap = new HashMap<>();
+        for (char ch = 'A'; ch < 'A' + COLUMNS; ch++) {
+            for (int row = 1; row <= ROWS; row++) {
+                String name = ch + String.valueOf(row);
+                slotMap.put(name, new BlankSlot());
             }
         }
-    }
-    public Map<String, StringSlot> getMap(){
-        return map;
     }
 
     @Override
     public double value(String name) {
-        StringSlot stringSlot= map.get(name);
-        if (stringSlot instanceof ValueSlot){
-            return ((ValueSlot) stringSlot).getValue(this);
+        Slot slot = slotMap.get(name);
+        if (slot instanceof ValueSlot) {
+            return ((ValueSlot) slot).getValue(this);
         }
-        throw new XLException("no value");
+        throw new XLException("Must contain a numeric value or expression");
     }
-    public void clear(String name){
-        map.put(name, new BlankSlot());
+
+
+    public void clear(String name) {
+        slotMap.put(name, new BlankSlot());
         setChanged();
         notifyObservers();
     }
-    public void clearAll(){
-        for (String s: map.keySet()){
-        clear(s);
+
+    public void clearAll() {
+        for (String name : slotMap.keySet()) {
+            clear(name);
         }
-    }
-    public void setCurrentSlot(String name) {
-        this.currentSlot = map.get(name);
-        setChanged();
-        notifyObservers();
-    }
-    public void setCurrentSlot(StringSlot slot) {
-        this.currentSlot = slot;
     }
 
     public void setCurrentSlotName(String currentSlotName) {
@@ -68,7 +64,25 @@ public class Sheet extends Observable implements Environment {
     }
 
     public String getSlotText(String name) {
-        return map.get(name).toString();
+        return slotMap.get(name).toString();
+    }
+
+    private Slot getSlot(String name) {
+        return slotMap.get(name);
+    }
+
+    public boolean isBlank(String name) {
+        return getSlot(name) instanceof BlankSlot;
+    }
+
+    public Map<String, Slot> getMap() {
+        return slotMap;
+    }
+
+
+
+    public void setSlot(String name, Slot slot) {
+        slotMap.put(name, slot);
     }
 
     public void setSlotValue(String name, String value) {
@@ -86,7 +100,7 @@ public class Sheet extends Observable implements Environment {
                     setSlot(name, new CommentSlot(value));
                     break;
                 case '=':
-                    setSlot(name, new ExceptionSlot()); //The edited slot is set to an exceptionslot
+                    setSlot(name, new CircleSlot()); //The edited slot is set to an exceptionslot
                     String expressionString = value.substring(1); // Removes the first character ("=")
                     ExprParser parser = new ExprParser();
                     Expr expression = parser.build(expressionString);
@@ -108,15 +122,4 @@ public class Sheet extends Observable implements Environment {
         notifyObservers();
     }
 
-    private void setSlot(String name, StringSlot slot) {
-        map.put(name, slot);
-    }
-
-    private StringSlot getSlot(String name) {
-        return map.get(name);
-    }
-
-    public boolean isBlank(String name) {
-        return getSlot(name) instanceof BlankSlot;
-    }
 }

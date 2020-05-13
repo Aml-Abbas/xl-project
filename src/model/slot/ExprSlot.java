@@ -4,17 +4,18 @@ import expr.Environment;
 import expr.Expr;
 
 public class ExprSlot implements ValueSlot{
-    private Expr expr;
+    Expr expression;
 
-    public ExprSlot(Expr expr){
-        this.expr=expr;
+    public ExprSlot(Expr expression) {
+        this.expression = expression;
     }
+
     @Override
-    public Double getValue(Environment environment) {
-        return expr.value(environment);
+    public double getValue(Environment environment) {
+        return expression.value(environment);
     }
-    @Override
+
     public String toString() {
-        return "="+expr.toString();
+        return "="+expression.toString();
     }
 }

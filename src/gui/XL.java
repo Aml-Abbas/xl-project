@@ -7,7 +7,7 @@ import static java.awt.BorderLayout.SOUTH;
 import expr.Environment;
 import gui.menu.XLMenuBar;
 import model.Sheet;
-import util.XLException;
+import util.XLCircularException;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -23,13 +23,14 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 @SuppressWarnings("deprecation")
-public class XL extends JFrame implements Printable,Observer {
+public class XL extends JFrame implements Printable, Observer {
     private static final int ROWS = 10, COLUMNS = 8;
     private XLCounter counter;
     private StatusLabel statusLabel = new StatusLabel();
     private XLList xlList;
-    private JPanel statusPanel,sheetPanel;
-    private Sheet sheet;
+    JPanel statusPanel, sheetPanel;
+    Sheet sheet;
+    private Editor editor;
 
     public XL(XL oldXL) {
         this(oldXL.xlList, oldXL.counter);
@@ -41,10 +42,10 @@ public class XL extends JFrame implements Printable,Observer {
         this.counter = counter;
         xlList.add(this);
         counter.increment();
-         statusPanel = new StatusPanel(statusLabel);
-         sheetPanel = new SheetPanel(ROWS, COLUMNS);
+        statusPanel = new StatusPanel(statusLabel);
+        sheetPanel = new SheetPanel(ROWS, COLUMNS);
 
-        Editor editor = new Editor();
+        editor = new Editor();
         add(NORTH, statusPanel);
         add(CENTER, editor);
         add(SOUTH, sheetPanel);
@@ -54,31 +55,12 @@ public class XL extends JFrame implements Printable,Observer {
         setResizable(false);
         setVisible(true);
 
-        sheetPanel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                String currentName= ((SheetPanel)sheetPanel).getNameOfSelected();
-                ((StatusPanel)statusPanel).setCurrentLabelText(currentName);
-                editor.setText(sheet.getSlotText(currentName));
-            sheet.setCurrentSlotName(currentName);
-            }
-        });
+        sheetPanel.addMouseListener(new SheetPanelMouseAdapter());
 
-        editor.addActionListener(e ->{
-            String currentName= ((SheetPanel)sheetPanel).getNameOfSelected();
-            try{
-                sheet.setSlotValue(currentName, editor.getText());
-            }catch (XLException exception){
-                statusLabel.setText("Circular dependency detected!");
-            }
-        });
+        editor.addActionListener(new EditorActionListener());
 
-        sheet=new Sheet();
+        sheet = new Sheet(ROWS, COLUMNS);
         sheet.addObserver(this);
-        sheet.setSlotValue("A3", "1");
-        sheet.setSlotValue("A2", "2");
-        sheet.setSlotValue("A1", "3");
-        sheet.setSlotValue("B1", "=A3+A2*A1");
     }
 
     public int print(Graphics g, PageFormat pageFormat, int page) {
@@ -118,7 +100,33 @@ public class XL extends JFrame implements Printable,Observer {
             }
         }
     }
-    public Environment getEnvironment(){
+
+    public Environment getEnvironment() {
         return sheet;
+    }
+
+    private class SheetPanelMouseAdapter extends MouseAdapter {
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            String nameOfSelected = ((SheetPanel) sheetPanel).getNameOfSelected();
+            ((StatusPanel) statusPanel).setCurrentLabelText(nameOfSelected);
+            editor.setText(sheet.getSlotText(nameOfSelected));
+
+            sheet.setCurrentSlotName(nameOfSelected);
+        }
+    }
+
+    private class EditorActionListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String name = ((SheetPanel) sheetPanel).getNameOfSelected();
+            try {
+                sheet.setSlotValue(name, editor.getText());
+            } catch (XLCircularException e1) {
+                statusLabel.setText("Circular dependency detected!");
+            }
+        }
     }
 }

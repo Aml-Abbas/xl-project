@@ -2,13 +2,13 @@ package model.slot;
 
 import expr.Environment;
 
-public class BlankSlot implements ValueSlot{
-    @Override
-    public Double getValue(Environment environment) {
-        return Double.valueOf(0);
-    }
-    @Override
+public class BlankSlot implements ValueSlot, Slot{
     public String toString() {
         return "";
+    }
+
+    @Override
+    public double getValue(Environment environment) {
+        return 0;
     }
 }

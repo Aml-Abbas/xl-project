@@ -2,6 +2,6 @@ package model.slot;
 
 import expr.Environment;
 
-public interface ValueSlot extends StringSlot {
-    Double getValue(Environment environment);
+public interface ValueSlot extends Slot {
+    double getValue(Environment environment);
 }

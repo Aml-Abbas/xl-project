@@ -1,20 +1,19 @@
 package model.slot;
 
 import expr.Environment;
-import util.NumberAdjustment;
 
 public class NumSlot implements ValueSlot{
-    private Double num;
+    private final double value;
+    public NumSlot(double value) {
+        this.value = value;
+    }
 
-    public NumSlot(Double value){
-    this.num=value;
-    }
     @Override
-    public Double getValue(Environment environment) {
-        return num;
+    public double getValue(Environment environment) {
+        return value;
     }
-    @Override
+
     public String toString() {
-        return String.valueOf(num);
+        return String.valueOf(value);
     }
 }

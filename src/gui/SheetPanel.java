@@ -4,17 +4,18 @@ import static java.awt.BorderLayout.CENTER;
 import static java.awt.BorderLayout.WEST;
 
 public class SheetPanel extends BorderPanel {
-    private SlotLabels slotLabels;
-
+    SlotLabels slotLabels;
     public SheetPanel(int rows, int columns) {
-        slotLabels= new SlotLabels(rows,columns);
+        slotLabels = new SlotLabels(rows, columns);
         add(WEST, new RowLabels(rows));
-        add(CENTER, new SlotLabels(rows, columns));
+        add(CENTER, slotLabels);
     }
-    public void setText(String name , String text){
+
+    public void setText(String name, String text) {
         slotLabels.setText(name, text);
     }
-    public String getNameOfSelected(){
+
+    public String getNameOfSelected() {
         return slotLabels.getNameOfSelected();
     }
 }

@@ -1,6 +1,6 @@
 package model;
 
-import model.slot.StringSlot;
+import model.slot.Slot;
 
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
@@ -12,8 +12,8 @@ public class XLPrintStream extends PrintStream {
         super(fileName);
     }
 
-    public void save(Set<Entry<String, StringSlot>> set) {
-        for (Entry<String, StringSlot> entry : set) {
+    public void save(Set<Entry<String, Slot>> set) {
+        for (Entry<String, Slot> entry : set) {
             print(entry.getKey());
             print('=');
             println(entry.getValue());

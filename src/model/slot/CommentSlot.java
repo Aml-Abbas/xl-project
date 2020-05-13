@@ -1,19 +1,12 @@
 package model.slot;
 
-import expr.Environment;
-
-public class CommentSlot implements ValueSlot{
-    String comment;
-
-    public CommentSlot(String comment){
-        this.comment=comment;
+public class CommentSlot implements Slot{
+    String text;
+    public CommentSlot(String text) {
+        this.text = text;
     }
-    @Override
-    public Double getValue(Environment environment) {
-        return Double.valueOf(0);
-    }
-    @Override
+
     public String toString() {
-        return comment;
+        return text;
     }
 }
