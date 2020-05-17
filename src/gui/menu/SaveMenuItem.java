@@ -17,7 +17,7 @@ class SaveMenuItem extends OpenMenuItem {
 
     protected void action(String path) throws FileNotFoundException {
         xlPrintStream= new XLPrintStream(path);
-        xlPrintStream.save(((Sheet)xl.getEnvironment()).getMap().entrySet());
+        xlPrintStream.save(xl.getSheet().getMap().entrySet());
     }
 
     protected int openDialog(JFileChooser fileChooser) {

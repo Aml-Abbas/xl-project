@@ -10,15 +10,15 @@ import java.util.Map;
 import javax.swing.SwingConstants;
 
 public class SlotLabels extends GridPanel {
-    private List<SlotLabel> labelList;
-    private Map<String, SlotLabel> labelMap;
+    private List<SlotLabel> slotlabelList;
+    private Map<String, SlotLabel> slotLabelmap;
     private SlotLabel selected;
     private String NameOfSelected;
 
     public SlotLabels(int rows, int cols) {
         super(rows + 1, cols);
-        labelList = new ArrayList<>(rows * cols);
-        labelMap = new HashMap<>();
+        slotlabelList = new ArrayList<>(rows * cols);
+        slotLabelmap = new HashMap<>();
 
         for (char ch = 'A'; ch < 'A' + cols; ch++) {
             add(new ColoredLabel(Character.toString(ch), Color.LIGHT_GRAY, SwingConstants.CENTER));
@@ -31,19 +31,19 @@ public class SlotLabels extends GridPanel {
                 label.addMouseListener(new LabelMouseAdapter(name));
 
                 add(label);
-                labelList.add(label);
-                labelMap.put(name, label);
+                slotlabelList.add(label);
+                slotLabelmap.put(name, label);
 
             }
         }
-        selected = labelList.get(0);
+        selected = slotlabelList.get(0);
         selected.setBackground(Color.YELLOW);
         NameOfSelected = "A1";
 
     }
 
     public void setText(String name, String text) {
-        labelMap.get(name).setText(text);
+        slotLabelmap.get(name).setText(text);
     }
 
     public String getNameOfSelected() {
@@ -53,7 +53,7 @@ public class SlotLabels extends GridPanel {
     private class LabelMouseAdapter extends MouseAdapter{
         private String slotName;
 
-        public LabelMouseAdapter(String slotName) {
+        private LabelMouseAdapter(String slotName) {
             this.slotName = slotName;
         }
 

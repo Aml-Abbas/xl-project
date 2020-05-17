@@ -4,10 +4,8 @@ import static java.awt.BorderLayout.CENTER;
 import static java.awt.BorderLayout.NORTH;
 import static java.awt.BorderLayout.SOUTH;
 
-import expr.Environment;
 import gui.menu.XLMenuBar;
 import model.Sheet;
-import util.XLCircularException;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -30,12 +28,18 @@ public class XL extends JFrame implements Printable, Observer {
     private XLList xlList;
     JPanel statusPanel, sheetPanel;
     Sheet sheet;
-    private Editor editor;
-
+    Editor editor;
     public XL(XL oldXL) {
         this(oldXL.xlList, oldXL.counter);
     }
 
+    /**
+     * Initializes the window and structure. Adding an actionListener
+     * Processes the text given in editor and sets slot value
+     *
+     * @param xlList as the list containing each instance
+     * @param counter as the number of windows open
+     */
     public XL(XLList xlList, XLCounter counter) {
         super("Untitled-" + counter);
         this.xlList = xlList;
@@ -54,7 +58,6 @@ public class XL extends JFrame implements Printable, Observer {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setResizable(false);
         setVisible(true);
-
         sheetPanel.addMouseListener(new SheetPanelMouseAdapter());
 
         editor.addActionListener(new EditorActionListener());
@@ -62,6 +65,11 @@ public class XL extends JFrame implements Printable, Observer {
         sheet = new Sheet(ROWS, COLUMNS);
         sheet.addObserver(this);
     }
+
+    public Sheet getSheet(){
+        return sheet;
+    }
+
 
     public int print(Graphics g, PageFormat pageFormat, int page) {
         if (page > 0)
@@ -72,6 +80,10 @@ public class XL extends JFrame implements Printable, Observer {
         return PAGE_EXISTS;
     }
 
+    /**
+     * Sets title to frame
+     * @param title
+     */
     public void rename(String title) {
         setTitle(title);
         xlList.setChanged();
@@ -81,51 +93,64 @@ public class XL extends JFrame implements Printable, Observer {
         new XL(new XLList(), new XLCounter());
     }
 
+    /**
+     * Sets status text in statuslabel
+     * @param text
+     */
+    public void setStatusText(String text) {
+        statusLabel.setText(text);
+    }
+
+
     @Override
-    public void update(Observable o, Object arg) {
+    public void update(Observable observable, Object object) {
+        String nameOfSelected = ((SheetPanel) sheetPanel).getNameOfSelected();
+        ((StatusPanel) statusPanel).setCurrentLabelText(nameOfSelected);
+
+        editor.setText(sheet.getSlotText(nameOfSelected));
+
         for (char ch = 'A'; ch < 'A' + COLUMNS; ch++) {
             for (int row = 1; row <= ROWS; row++) {
                 String name = ch + String.valueOf(row);
-                String text;
-                try {
-                    if (sheet.isBlank(name)) {
-                        text = "";
-                    } else {
-                        text = String.valueOf(sheet.value(name));
-                    }
-                } catch (Exception e) {
-                    text = sheet.getSlotText(name);
-                }
+                String text = sheet.getValue(name);
                 ((SheetPanel) sheetPanel).setText(name, text);
+
             }
         }
     }
 
-    public Environment getEnvironment() {
-        return sheet;
-    }
 
     private class SheetPanelMouseAdapter extends MouseAdapter {
 
         @Override
         public void mouseClicked(MouseEvent e) {
+            setStatusText("");
+            try {
+                sheet.setSlotValue(sheet.getCurrentSlot(), editor.getText());
+            } catch (Exception e1) {
+                setStatusText(e1.getMessage());
+            }
             String nameOfSelected = ((SheetPanel) sheetPanel).getNameOfSelected();
+
             ((StatusPanel) statusPanel).setCurrentLabelText(nameOfSelected);
+
             editor.setText(sheet.getSlotText(nameOfSelected));
 
-            sheet.setCurrentSlotName(nameOfSelected);
+            sheet.setCurrentSlot(nameOfSelected);
         }
-    }
+        }
+
 
     private class EditorActionListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
+            setStatusText("");
             String name = ((SheetPanel) sheetPanel).getNameOfSelected();
             try {
                 sheet.setSlotValue(name, editor.getText());
-            } catch (XLCircularException e1) {
-                statusLabel.setText("Circular dependency detected!");
+            } catch (Exception e1) {
+                setStatusText(e1.getMessage());
             }
         }
     }

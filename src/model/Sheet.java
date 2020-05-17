@@ -4,121 +4,135 @@ import expr.Environment;
 import expr.Expr;
 import expr.ExprParser;
 import model.slot.*;
-import util.XLException;
-
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Observable;
 
 @SuppressWarnings("deprecation")
 public class Sheet extends Observable implements Environment {
-
-
     public final int ROWS, COLUMNS;
-    private String currentSlotName;
-    private Map<String, Slot> slotMap;
+    private String currentSlot;
 
+    Map<String, Slot> sheet;
+
+    /**
+     * Creates a sheet of the given number of rows and columns
+     *
+     * @param ROWS as rows
+     * @param COLUMNS as columns
+     */
     public Sheet(int ROWS, int COLUMNS) {
         this.ROWS = ROWS;
         this.COLUMNS = COLUMNS;
-        currentSlotName = "A1";
+        currentSlot = "A1";
 
-        slotMap = new HashMap<>();
+        sheet = new HashMap<>();
         for (char ch = 'A'; ch < 'A' + COLUMNS; ch++) {
             for (int row = 1; row <= ROWS; row++) {
                 String name = ch + String.valueOf(row);
-                slotMap.put(name, new BlankSlot());
+                sheet.put(name, new BlankSlot());
             }
         }
     }
 
+    /**
+     * Gets the value of a slot at the given location.
+     * @param name as the slotName e.g. A1
+     */
     @Override
     public double value(String name) {
-        Slot slot = slotMap.get(name);
-        if (slot instanceof ValueSlot) {
-            return ((ValueSlot) slot).getValue(this);
+        Slot slot = sheet.get(name);
+        if (slot == null) {
+            throw new NoSuchElementException("There is no element at the given location.");
         }
-        throw new XLException("Must contain a numeric value or expression");
+        return slot.getValue(this); // Gets the value using the environment.
     }
 
-
+    /**
+     * Clears the specified cell
+     *
+     * @param name name of the slot e.g. A1
+     */
     public void clear(String name) {
-        slotMap.put(name, new BlankSlot());
+        sheet.put(name, new BlankSlot());
         setChanged();
         notifyObservers();
     }
 
+    /**
+     * Clears all the cells
+     */
     public void clearAll() {
-        for (String name : slotMap.keySet()) {
+        for (String name : sheet.keySet()) {
             clear(name);
         }
     }
 
-    public void setCurrentSlotName(String currentSlotName) {
-        this.currentSlotName = currentSlotName;
+    /**
+     * Sets a slot to current slot
+     * @param name name of the slot e.g. A1
+     */
+    public void setCurrentSlot(String name) {
+        this.currentSlot = name;
+        setChanged();
+        notifyObservers();
     }
 
-    public String getCurrentSlotName() {
-        return currentSlotName;
+    public String getCurrentSlot() {
+        return currentSlot;
     }
 
+    /**
+     * Returns a string that represents what the slot's value should be in the editor.
+     * @param name name of slot
+     * @return
+     */
     public String getSlotText(String name) {
-        return slotMap.get(name).toString();
+        return sheet.get(name).toString();
     }
 
-    private Slot getSlot(String name) {
-        return slotMap.get(name);
+    /**
+     * Returns a string that represents what the slot's value should be in a cell.
+     * @param name as the name of slot
+     * @return
+     */
+    public String getValue(String name) {
+        return sheet.get(name).StringValue(this);
     }
 
-    public boolean isBlank(String name) {
-        return getSlot(name) instanceof BlankSlot;
-    }
-
-    public Map<String, Slot> getMap() {
-        return slotMap;
-    }
-
-
-
-    private void setSlot(String name, Slot slot) {
-        slotMap.put(name, slot);
-    }
-
-    public void setSlotValue(String name, String value) {
-
+    public void setSlotValue(String name, String value) throws Exception{
         if (value == null || value.length() == 0) {
             setSlot(name, new BlankSlot());
-            setChanged();
-            notifyObservers();
             return;
         }
         char firstCharacter = value.charAt(0);
-        try {
-            switch (firstCharacter) {
-                case '#':
-                    setSlot(name, new CommentSlot(value));
-                    break;
-                case '=':
-                    setSlot(name, new CircleSlot());
-                    String expressionString = value.substring(1);
-                    ExprParser parser = new ExprParser();
-                    Expr expression = parser.build(expressionString);
-                    expression.value(this);
+        if (firstCharacter == '#') {
+            setSlot(name, new CommentSlot(value));
+        } else {
+            setSlot(name, new CircleSlot());
+            ExprParser parser = new ExprParser();
+            Expr expression = parser.build(value);
+            expression.value(this);
 
-                    setSlot(name, new ExprSlot(expression));
-                    break;
-                default:
-                    setSlot(name, new NumSlot(Double.valueOf(value)));
-                    break;
-            }
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+            setSlot(name, new ExprSlot(expression));
         }
         setChanged();
         notifyObservers();
+    }
+
+    /**
+     * Puts a slot at the given location
+     * @param name name of the slot e.g. A9
+     * @param slot the given data in slot
+     */
+    private void setSlot(String name, Slot slot) {
+        sheet.put(name, slot);
+
+    }
+
+    public Map<String, Slot> getMap() {
+        return sheet;
     }
 
 }

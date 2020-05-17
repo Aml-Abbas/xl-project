@@ -17,7 +17,7 @@ class LoadMenuItem extends OpenMenuItem {
 
     protected void action(String path) throws FileNotFoundException {
         xlBufferedReader= new XLBufferedReader(path);
-        xlBufferedReader.load((Sheet)xl.getEnvironment());
+        xlBufferedReader.load(xl.getSheet());
     }
 
     protected int openDialog(JFileChooser fileChooser) {
