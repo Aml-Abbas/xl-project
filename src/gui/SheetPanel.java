@@ -18,4 +18,7 @@ public class SheetPanel extends BorderPanel {
     public String getNameOfSelected() {
         return slotLabels.getNameOfSelected();
     }
+    public void setNameOfSelected(String name) {
+        slotLabels.setNameOfSelected(name);
+    }
 }

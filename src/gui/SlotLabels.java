@@ -1,5 +1,7 @@
 package gui;
 
+import model.CurrentSlot;
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -48,6 +50,9 @@ public class SlotLabels extends GridPanel {
 
     public String getNameOfSelected() {
         return NameOfSelected;
+    }
+    public void setNameOfSelected(String name) {
+        this.NameOfSelected=name;
     }
 
     private class LabelMouseAdapter extends MouseAdapter{

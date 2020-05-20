@@ -26,9 +26,9 @@ public class XL extends JFrame implements Printable, Observer {
     private XLCounter counter;
     private StatusLabel statusLabel = new StatusLabel();
     private XLList xlList;
-    JPanel statusPanel, sheetPanel;
-    Sheet sheet;
-    Editor editor;
+    private JPanel statusPanel, sheetPanel;
+    private Sheet sheet;
+    private Editor editor;
     public XL(XL oldXL) {
         this(oldXL.xlList, oldXL.counter);
     }
@@ -93,21 +93,13 @@ public class XL extends JFrame implements Printable, Observer {
         new XL(new XLList(), new XLCounter());
     }
 
-    /**
-     * Sets status text in statuslabel
-     * @param text
-     */
-    public void setStatusText(String text) {
-        statusLabel.setText(text);
-    }
-
 
     @Override
     public void update(Observable observable, Object object) {
         String nameOfSelected = ((SheetPanel) sheetPanel).getNameOfSelected();
         ((StatusPanel) statusPanel).setCurrentLabelText(nameOfSelected);
 
-        editor.setText(sheet.getSlotText(nameOfSelected));
+        editor.setText(sheet.getString(nameOfSelected));
 
         for (char ch = 'A'; ch < 'A' + COLUMNS; ch++) {
             for (int row = 1; row <= ROWS; row++) {
@@ -124,19 +116,19 @@ public class XL extends JFrame implements Printable, Observer {
 
         @Override
         public void mouseClicked(MouseEvent e) {
-            setStatusText("");
+            statusLabel.setText("");
             try {
-                sheet.setSlotValue(sheet.getCurrentSlot(), editor.getText());
+                sheet.insertExpression(sheet.getNameOfCurrentSlot(), editor.getText());
             } catch (Exception e1) {
-                setStatusText(e1.getMessage());
+                statusLabel.setText(e1.getMessage());
             }
             String nameOfSelected = ((SheetPanel) sheetPanel).getNameOfSelected();
 
             ((StatusPanel) statusPanel).setCurrentLabelText(nameOfSelected);
 
-            editor.setText(sheet.getSlotText(nameOfSelected));
+            editor.setText(sheet.getString(nameOfSelected));
 
-            sheet.setCurrentSlot(nameOfSelected);
+            sheet.setNameOfCurrentSlot(nameOfSelected);
         }
         }
 
@@ -145,12 +137,12 @@ public class XL extends JFrame implements Printable, Observer {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            setStatusText("");
-            String name = ((SheetPanel) sheetPanel).getNameOfSelected();
+            statusLabel.setText("");
+            String nameOfSelected = ((SheetPanel) sheetPanel).getNameOfSelected();
             try {
-                sheet.setSlotValue(name, editor.getText());
+                sheet.insertExpression(nameOfSelected, editor.getText());
             } catch (Exception e1) {
-                setStatusText(e1.getMessage());
+                statusLabel.setText(e1.getMessage());
             }
         }
     }

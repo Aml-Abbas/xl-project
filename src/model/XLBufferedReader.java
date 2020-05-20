@@ -1,12 +1,10 @@
 package model;
 
-import model.slot.BlankSlot;
 import util.XLException;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.Map;
 
 public class XLBufferedReader extends BufferedReader {
 
@@ -20,10 +18,10 @@ public class XLBufferedReader extends BufferedReader {
                 String string = readLine();
                 String[] split= string.split("=");
                 if (split.length>1){
-                    sheet.setSlotValue(split[0],split[1]);
+                    sheet.insertExpression(split[0],split[1]);
 
                 }else {
-                    sheet.setSlotValue(split[0],"");
+                    sheet.insertExpression(split[0],"");
                 }
             }
         } catch (Exception e) {
