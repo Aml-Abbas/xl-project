@@ -2,8 +2,9 @@ package model.slot;
 
 import expr.Environment;
 
-public class CommentSlot implements Slot{
+public class CommentSlot implements Slot {
     String text;
+
     public CommentSlot(String text) {
         this.text = text;
     }

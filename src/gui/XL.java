@@ -29,6 +29,7 @@ public class XL extends JFrame implements Printable, Observer {
     private JPanel statusPanel, sheetPanel;
     private Sheet sheet;
     private Editor editor;
+
     public XL(XL oldXL) {
         this(oldXL.xlList, oldXL.counter);
     }
@@ -37,7 +38,7 @@ public class XL extends JFrame implements Printable, Observer {
      * Initializes the window and structure. Adding an actionListener
      * Processes the text given in editor and sets slot value
      *
-     * @param xlList as the list containing each instance
+     * @param xlList  as the list containing each instance
      * @param counter as the number of windows open
      */
     public XL(XLList xlList, XLCounter counter) {
@@ -48,8 +49,11 @@ public class XL extends JFrame implements Printable, Observer {
         counter.increment();
         statusPanel = new StatusPanel(statusLabel);
         sheetPanel = new SheetPanel(ROWS, COLUMNS);
-
         editor = new Editor();
+
+        sheet = new Sheet();
+        sheet.addObserver(this);
+
         add(NORTH, statusPanel);
         add(CENTER, editor);
         add(SOUTH, sheetPanel);
@@ -62,11 +66,9 @@ public class XL extends JFrame implements Printable, Observer {
 
         editor.addActionListener(new EditorActionListener());
 
-        sheet = new Sheet(ROWS, COLUMNS);
-        sheet.addObserver(this);
     }
 
-    public Sheet getSheet(){
+    public Sheet getSheet() {
         return sheet;
     }
 
@@ -82,6 +84,7 @@ public class XL extends JFrame implements Printable, Observer {
 
     /**
      * Sets title to frame
+     *
      * @param title
      */
     public void rename(String title) {
@@ -96,10 +99,10 @@ public class XL extends JFrame implements Printable, Observer {
 
     @Override
     public void update(Observable observable, Object object) {
-        String nameOfSelected = ((SheetPanel) sheetPanel).getNameOfSelected();
-        ((StatusPanel) statusPanel).setCurrentLabelText(nameOfSelected);
+        String currentAddress = ((SheetPanel) sheetPanel).getCurrentAddress();
+        ((StatusPanel) statusPanel).setCurrentLabelText(currentAddress);
 
-        editor.setText(sheet.getString(nameOfSelected));
+        editor.setText(sheet.getString(currentAddress));
 
         for (char ch = 'A'; ch < 'A' + COLUMNS; ch++) {
             for (int row = 1; row <= ROWS; row++) {
@@ -117,30 +120,28 @@ public class XL extends JFrame implements Printable, Observer {
         @Override
         public void mouseClicked(MouseEvent e) {
             statusLabel.setText("");
+            SheetPanel sheetPanel = (SheetPanel) XL.this.sheetPanel;
             try {
-                sheet.insertExpression(sheet.getNameOfCurrentSlot(), editor.getText());
-            } catch (Exception e1) {
-                statusLabel.setText(e1.getMessage());
+                sheet.insertExpression(
+                        sheetPanel.getPreviousAddress(),
+                        editor.getText().trim()
+                        );
+            } catch (Exception exception) {
+                statusLabel.setText(exception.getMessage());
             }
-            String nameOfSelected = ((SheetPanel) sheetPanel).getNameOfSelected();
-
-            ((StatusPanel) statusPanel).setCurrentLabelText(nameOfSelected);
-
-            editor.setText(sheet.getString(nameOfSelected));
-
-            sheet.setNameOfCurrentSlot(nameOfSelected);
+            String value = sheet.getString(sheetPanel.getCurrentAddress());
+            editor.setText(value);
         }
-        }
+    }
 
 
     private class EditorActionListener implements ActionListener {
-
         @Override
         public void actionPerformed(ActionEvent e) {
             statusLabel.setText("");
-            String nameOfSelected = ((SheetPanel) sheetPanel).getNameOfSelected();
+            String currentAddress = ((SheetPanel) sheetPanel).getCurrentAddress();
             try {
-                sheet.insertExpression(nameOfSelected, editor.getText());
+                sheet.insertExpression(currentAddress, editor.getText());
             } catch (Exception e1) {
                 statusLabel.setText(e1.getMessage());
             }

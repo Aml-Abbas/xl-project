@@ -15,10 +15,15 @@ public class SheetPanel extends BorderPanel {
         slotLabels.setText(name, text);
     }
 
-    public String getNameOfSelected() {
-        return slotLabels.getNameOfSelected();
+    public String getCurrentAddress() {
+        return slotLabels.getCurrentAddress();
     }
-    public void setNameOfSelected(String name) {
-        slotLabels.setNameOfSelected(name);
+
+    public void setCurrentAddress(String address) {
+        slotLabels.setCurrentAddress(address);
+    }
+
+    public String getPreviousAddress() {
+        return slotLabels.getPreviousAddress();
     }
 }

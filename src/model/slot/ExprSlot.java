@@ -4,7 +4,7 @@ import expr.Environment;
 import expr.Expr;
 import util.NumberAdjustment;
 
-public class ExprSlot implements Slot{
+public class ExprSlot implements Slot {
     Expr expression;
 
     public ExprSlot(Expr expression) {
@@ -18,8 +18,8 @@ public class ExprSlot implements Slot{
 
     @Override
     public String StringValue(Environment env) {
-        NumberAdjustment adj = new NumberAdjustment(0,1);
-        return adj.left(getValue(env)+"");
+        NumberAdjustment adj = new NumberAdjustment(0, 1);
+        return adj.left(getValue(env) + "");
     }
 
     public String toString() {
