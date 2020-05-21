@@ -18,8 +18,7 @@ public class ExprSlot implements Slot {
 
     @Override
     public String StringValue(Environment env) {
-        NumberAdjustment adj = new NumberAdjustment(0, 1);
-        return adj.left(getValue(env) + "");
+        return String.valueOf(expression.value(env));
     }
 
     public String toString() {

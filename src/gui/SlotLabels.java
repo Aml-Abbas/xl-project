@@ -1,5 +1,7 @@
 package gui;
 
+import model.CurrentSlot;
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -13,8 +15,9 @@ public class SlotLabels extends GridPanel {
     private List<SlotLabel> slotlabelList;
     private Map<String, SlotLabel> slotLabelmap;
     private SlotLabel currentSlotLabel;
-    private String currentAddress;
+    //private String currentAddress;
     private String previousAddress;
+    private CurrentSlot currentAddress;
 
     public SlotLabels(int rows, int cols) {
         super(rows + 1, cols);
@@ -34,8 +37,8 @@ public class SlotLabels extends GridPanel {
                 label.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
-                        previousAddress = currentAddress;
-                        currentAddress = address;
+                        previousAddress = currentAddress.getNameOfCurrentSlot();
+                        currentAddress = new CurrentSlot(address);
 
                         currentSlotLabel.setBackground(Color.WHITE);
                         currentSlotLabel = (SlotLabel) e.getSource();
@@ -54,7 +57,7 @@ public class SlotLabels extends GridPanel {
 
         currentSlotLabel = slotlabelList.get(0);
         currentSlotLabel.setBackground(Color.YELLOW);
-        currentAddress = "A1";
+        currentAddress = new CurrentSlot("A1");
 
 
 
@@ -65,11 +68,11 @@ public class SlotLabels extends GridPanel {
     }
 
     public String getCurrentAddress() {
-        return currentAddress;
+        return currentAddress.getNameOfCurrentSlot();
     }
 
     public void setCurrentAddress(String address) {
-        this.currentAddress = address;
+        this.currentAddress.setNameOfCurrentSlot(address);
     }
 
     public String getPreviousAddress() {
@@ -89,7 +92,7 @@ public class SlotLabels extends GridPanel {
 
         @Override
         public void mouseClicked(MouseEvent e) {
-            currentAddress = address;
+            currentAddress.setNameOfCurrentSlot(address);
             currentSlotLabel.setBackground(Color.WHITE);
 
             currentSlotLabel = (SlotLabel) e.getSource();

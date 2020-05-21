@@ -64,11 +64,22 @@ public class Sheet extends Observable implements Environment {
         if (value.equals("") || value.isEmpty()) {
             sheet.remove(address);
         } else {
-            char firstCharacter = value.charAt(0);
-            if (firstCharacter == '#') {
+            char isCommnet = value.charAt(0);
+            if (isCommnet == '#') {
                 sheet.put(address, new CommentSlot(value));
             } else {
+                /*try {
+                    Slot slot= new CircleSlot(value);
 
+                    ExprParser parser = new ExprParser();
+                    Expr expression = parser.build(value);
+                    expression.value(this);
+                    sheet.put(address, new ExprSlot(expression));
+                }catch (IOException ioException){
+                    sheet.remove(address);
+                    setChanged();
+                notifyObservers();
+                }*/
                 if (value.contains(address)) {
                     throw new XLCircularException();
                 }
@@ -78,7 +89,6 @@ public class Sheet extends Observable implements Environment {
                 expression.value(this);
 
                 sheet.put(address, new ExprSlot(expression));
-
             }
         }
         setChanged();
