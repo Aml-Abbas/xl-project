@@ -8,10 +8,6 @@ import java.io.IOException;
 
 public class CircleSlot implements Slot {
 
-    public CircleSlot(String value) throws IOException {
-        ExprParser parser = new ExprParser();
-        parser.build(value);
-    }
 
     @Override
     public double getValue(Environment environment) {

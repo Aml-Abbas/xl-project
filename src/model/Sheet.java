@@ -5,6 +5,7 @@ import expr.Expr;
 import expr.ExprParser;
 import model.slot.*;
 import util.XLCircularException;
+import util.XLException;
 
 import javax.imageio.IIOException;
 import java.io.IOException;
@@ -56,41 +57,30 @@ public class Sheet extends Observable implements Environment {
         return "";
     }
 
-    public void insertExpression(String address, String value) throws IOException {
+  public void insertExpression(String address, String value) throws IOException {
         // value can be
         // Number
         // Comment
         // Expression
         if (value.equals("") || value.isEmpty()) {
             sheet.remove(address);
-        } else {
-            char isCommnet = value.charAt(0);
-            if (isCommnet == '#') {
-                sheet.put(address, new CommentSlot(value));
-            } else {
-                /*try {
-                    Slot slot= new CircleSlot(value);
+        }
 
-                    ExprParser parser = new ExprParser();
-                    Expr expression = parser.build(value);
-                    expression.value(this);
-                    sheet.put(address, new ExprSlot(expression));
-                }catch (IOException ioException){
-                    sheet.remove(address);
-                    setChanged();
-                notifyObservers();
-                }*/
-                if (value.contains(address)) {
-                    throw new XLCircularException();
-                }
+        else if (value.charAt(0) == '#') {
+                sheet.put(address, new CommentSlot(value));
+            }
+        else {
+            try {
+                sheet.put(address, new CircleSlot());
 
                 ExprParser parser = new ExprParser();
                 Expr expression = parser.build(value);
-                expression.value(this);
-
                 sheet.put(address, new ExprSlot(expression));
+            }catch (Exception e){
+             e.getMessage();
             }
-        }
+            }
+
         setChanged();
         notifyObservers();
     }
