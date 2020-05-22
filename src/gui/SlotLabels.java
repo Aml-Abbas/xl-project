@@ -15,7 +15,6 @@ public class SlotLabels extends GridPanel {
     private List<SlotLabel> slotlabelList;
     private Map<String, SlotLabel> slotLabelmap;
     private SlotLabel currentSlotLabel;
-    //private String currentAddress;
     private String previousAddress;
     private CurrentSlot currentAddress;
 
@@ -58,9 +57,6 @@ public class SlotLabels extends GridPanel {
         currentSlotLabel = slotlabelList.get(0);
         currentSlotLabel.setBackground(Color.YELLOW);
         currentAddress = new CurrentSlot("A1");
-
-
-
     }
 
     public void setText(String name, String text) {
@@ -71,17 +67,10 @@ public class SlotLabels extends GridPanel {
         return currentAddress.getNameOfCurrentSlot();
     }
 
-    public void setCurrentAddress(String address) {
-        this.currentAddress.setNameOfCurrentSlot(address);
-    }
-
     public String getPreviousAddress() {
         return previousAddress;
     }
 
-    public void setPreviousAddress(String previousAddress) {
-        this.previousAddress = previousAddress;
-    }
 
     private class LabelMouseAdapter extends MouseAdapter {
         private String address;

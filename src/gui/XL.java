@@ -126,6 +126,7 @@ public class XL extends JFrame implements Printable, Observer {
                         sheetPanel.getPreviousAddress(),
                         editor.getText().trim()
                         );
+
             } catch (Exception exception) {
                 statusLabel.setText(exception.getMessage());
                 statusLabel.setText("");

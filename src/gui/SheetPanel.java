@@ -19,10 +19,6 @@ public class SheetPanel extends BorderPanel {
         return slotLabels.getCurrentAddress();
     }
 
-    public void setCurrentAddress(String address) {
-        slotLabels.setCurrentAddress(address);
-    }
-
     public String getPreviousAddress() {
         return slotLabels.getPreviousAddress();
     }
