@@ -80,30 +80,23 @@ public class Sheet extends Observable implements Environment {
 
         else {
             Slot previousSlot = sheet.get(address);
-            CircleSlot circleSlot = new CircleSlot(value);
+
+            ExprParser parser = new ExprParser();
+            Expr expression = parser.build(value);
             try {
-                sheet.put(address, circleSlot);
-                circleSlot.eval(this);
-            } catch (Exception e) {
+                insertExpression(address, new CircleSlot());
+                expression.value(this::value);
+            }catch (Exception e) {
                 sheet.remove(address);
                 if (previousSlot!=null && previousSlot.StringValue(this::value) != "")
                     insertExpression(address, previousSlot);
-                //currentStatus.updateStatus("Error: " + e.getMessage());
                 setChanged();
                 notifyObservers();
                 throw e;
             }
-        }
-        ExprParser parser = new ExprParser();
-        Expr expression = parser.build(value);
-        insertExpression(address,new ExprSlot(expression));
+            insertExpression(address,new ExprSlot(expression));
 
-            /*insertExpression(address,new CircleSlot());
-                // om det går att räkna ut värdet.
-                ExprParser parser = new ExprParser();
-                Expr expression = parser.build(value);
-                expression.value(this);
-                insertExpression(address,new ExprSlot(expression));*/
+        }
 
         setChanged();
         notifyObservers();
