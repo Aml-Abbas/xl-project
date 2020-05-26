@@ -70,7 +70,7 @@ public class Sheet extends Observable implements Environment {
         // Comment
         // Expression
 
-        if (value.equals("") || value.isEmpty()) {
+        if (value.equals("")) {
             sheet.remove(address);
         }
 
@@ -79,17 +79,36 @@ public class Sheet extends Observable implements Environment {
             }
 
         else {
-                insertExpression(address,new CircleSlot());
+            Slot previousSlot = sheet.get(address);
+            CircleSlot circleSlot = new CircleSlot(value);
+            try {
+                sheet.put(address, circleSlot);
+                circleSlot.eval(this);
+            } catch (Exception e) {
+                sheet.remove(address);
+                if (previousSlot!=null && previousSlot.StringValue(this::value) != "")
+                    insertExpression(address, previousSlot);
+                //currentStatus.updateStatus("Error: " + e.getMessage());
+                setChanged();
+                notifyObservers();
+                throw e;
+            }
+        }
+        ExprParser parser = new ExprParser();
+        Expr expression = parser.build(value);
+        insertExpression(address,new ExprSlot(expression));
+
+            /*insertExpression(address,new CircleSlot());
                 // om det går att räkna ut värdet.
                 ExprParser parser = new ExprParser();
                 Expr expression = parser.build(value);
                 expression.value(this);
-                insertExpression(address,new ExprSlot(expression));
-            }
+                insertExpression(address,new ExprSlot(expression));*/
 
         setChanged();
         notifyObservers();
     }
+
 
     public void save(String path) throws FileNotFoundException {
         XLPrintStream xlPrintStream= new XLPrintStream(path);
