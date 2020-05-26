@@ -1,7 +1,5 @@
 package gui;
 
-import model.CurrentSlot;
-
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -36,7 +34,7 @@ public class SlotLabels extends GridPanel {
                 label.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
-                        previousAddress = currentAddress.getNameOfCurrentSlot();
+                        previousAddress = currentAddress.getCurrentSlot();
                         currentAddress = new CurrentSlot(address);
 
                         currentSlotLabel.setBackground(Color.WHITE);
@@ -64,7 +62,7 @@ public class SlotLabels extends GridPanel {
     }
 
     public String getCurrentAddress() {
-        return currentAddress.getNameOfCurrentSlot();
+        return currentAddress.getCurrentSlot();
     }
 
     public String getPreviousAddress() {
@@ -81,7 +79,7 @@ public class SlotLabels extends GridPanel {
 
         @Override
         public void mouseClicked(MouseEvent e) {
-            currentAddress.setNameOfCurrentSlot(address);
+            currentAddress.setCurrentSlot(address);
             currentSlotLabel.setBackground(Color.WHITE);
 
             currentSlotLabel = (SlotLabel) e.getSource();

@@ -8,6 +8,7 @@ import util.XLCircularException;
 import util.XLException;
 
 import javax.imageio.IIOException;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,16 +24,16 @@ public class Sheet extends Observable implements Environment {
     }
 
     @Override
-    public double value(String name) {
-        Slot slot = sheet.get(name);
+    public double value(String address) {
+        Slot slot = sheet.get(address);
         if (slot == null) {
             throw new NoSuchElementException("There is no element at the given location.");
         }
         return slot.getValue(this);
     }
 
-    public void clear(String name) {
-        sheet.remove(name);
+    public void clear(String address) {
+        sheet.remove(address);
         setChanged();
         notifyObservers();
     }
@@ -71,13 +72,15 @@ public class Sheet extends Observable implements Environment {
             }
         else {
             try {
+                // om det går att räkna ut värdet.
                 sheet.put(address, new CircleSlot());
 
                 ExprParser parser = new ExprParser();
                 Expr expression = parser.build(value);
                 sheet.put(address, new ExprSlot(expression));
             }catch (Exception e){
-             e.getMessage();
+             //KAStA VIDARE (editor )
+                e.getMessage();
             }
             }
 
@@ -85,8 +88,14 @@ public class Sheet extends Observable implements Environment {
         notifyObservers();
     }
 
-    public Map<String, Slot> getMap() {
-        return sheet;
+    public void save(String path) throws FileNotFoundException {
+        XLPrintStream xlPrintStream= new XLPrintStream(path);
+        xlPrintStream.save(sheet.entrySet());
     }
 
+    public void load(String path) throws FileNotFoundException {
+        XLBufferedReader xlBufferedReader= new XLBufferedReader(path);
+        xlBufferedReader.load(this);
+
+    }
 }

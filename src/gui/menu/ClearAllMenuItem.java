@@ -12,8 +12,8 @@ class ClearAllMenuItem extends JMenuItem implements ActionListener {
 
     public ClearAllMenuItem(XL xl) {
         super("Clear all");
-        this.xl=xl;
         addActionListener(this);
+        this.xl=xl;
     }
 
     public void actionPerformed(ActionEvent e) {

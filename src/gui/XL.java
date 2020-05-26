@@ -15,6 +15,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
 import javax.swing.JFrame;
@@ -106,12 +108,21 @@ public class XL extends JFrame implements Printable, Observer {
 
         for (char ch = 'A'; ch < 'A' + COLUMNS; ch++) {
             for (int row = 1; row <= ROWS; row++) {
-                String name = ch + String.valueOf(row);
-                String text = sheet.getValue(name);
-                ((SheetPanel) sheetPanel).setText(name, text);
+                String address = ch + String.valueOf(row);
+                String text = sheet.getValue(address);
+                ((SheetPanel) sheetPanel).setText(address, text);
 
             }
         }
+    }
+
+    public void save(String path) throws FileNotFoundException {
+        sheet.save(path);
+    }
+
+    public void load(String path) throws FileNotFoundException {
+
+            sheet.load(path);
     }
 
 

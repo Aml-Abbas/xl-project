@@ -6,18 +6,17 @@ import model.Sheet;
 import model.XLBufferedReader;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import javax.swing.JFileChooser;
 
 class LoadMenuItem extends OpenMenuItem {
-    private XLBufferedReader xlBufferedReader;
 
     public LoadMenuItem(XL xl, StatusLabel statusLabel) {
         super(xl, statusLabel, "Load");
     }
 
     protected void action(String path) throws FileNotFoundException {
-        xlBufferedReader= new XLBufferedReader(path);
-        xlBufferedReader.load(xl.getSheet());
+         xl.load(path);
     }
 
     protected int openDialog(JFileChooser fileChooser) {
