@@ -88,8 +88,9 @@ public class Sheet extends Observable implements Environment {
                 expression.value(this::value);
             }catch (Exception e) {
                 sheet.remove(address);
-                if (previousSlot!=null && previousSlot.StringValue(this::value) != "")
+                if (previousSlot!=null) {
                     insertExpression(address, previousSlot);
+                }
                 setChanged();
                 notifyObservers();
                 throw e;
