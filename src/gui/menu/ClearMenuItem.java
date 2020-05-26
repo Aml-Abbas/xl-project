@@ -17,6 +17,6 @@ class ClearMenuItem extends JMenuItem implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-        Sheet sheet= xl.getSheet();
+        xl.clear();
     }
 }

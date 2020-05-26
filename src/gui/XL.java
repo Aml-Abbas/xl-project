@@ -70,10 +70,6 @@ public class XL extends JFrame implements Printable, Observer {
 
     }
 
-    public Sheet getSheet() {
-        return sheet;
-    }
-
 
     public int print(Graphics g, PageFormat pageFormat, int page) {
         if (page > 0)
@@ -123,6 +119,15 @@ public class XL extends JFrame implements Printable, Observer {
     public void load(String path) throws FileNotFoundException {
 
             sheet.load(path);
+    }
+
+    public void clear() {
+        String currentAddress = ((SheetPanel) sheetPanel).getCurrentAddress();
+        sheet.clear(currentAddress);
+    }
+
+    public void clearAll() {
+        sheet.clearAll();
     }
 
 

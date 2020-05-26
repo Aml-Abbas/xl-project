@@ -39,9 +39,9 @@ public class Sheet extends Observable implements Environment {
     }
 
     public void clearAll() {
-        for (String address : sheet.keySet()) {
-            clear(address);
-        }
+        sheet = new HashMap<>();
+        setChanged();
+        notifyObservers();
     }
 
     public String getString(String address) {

@@ -20,6 +20,7 @@ class LoadMenuItem extends OpenMenuItem {
     }
 
     protected int openDialog(JFileChooser fileChooser) {
+        xl.clearAll();
         return fileChooser.showOpenDialog(xl);
     }
 }
