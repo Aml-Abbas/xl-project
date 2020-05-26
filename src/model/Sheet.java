@@ -58,30 +58,33 @@ public class Sheet extends Observable implements Environment {
         return "";
     }
 
-  public void insertExpression(String address, String value) throws IOException {
+
+
+    private void insertExpression(String address, Slot slot) {
+        sheet.put(address, slot);
+    }
+
+    public void tryInsertExpression(String address, String value) throws IOException {
         // value can be
         // Number
         // Comment
         // Expression
+
         if (value.equals("") || value.isEmpty()) {
             sheet.remove(address);
         }
 
         else if (value.charAt(0) == '#') {
-                sheet.put(address, new CommentSlot(value));
+            insertExpression(address, new CommentSlot(value));
             }
-        else {
-            try {
-                // om det går att räkna ut värdet.
-                sheet.put(address, new CircleSlot());
 
+        else {
+                insertExpression(address,new CircleSlot());
+                // om det går att räkna ut värdet.
                 ExprParser parser = new ExprParser();
                 Expr expression = parser.build(value);
-                sheet.put(address, new ExprSlot(expression));
-            }catch (Exception e){
-             //KAStA VIDARE (editor )
-                e.getMessage();
-            }
+                expression.value(this);
+                insertExpression(address,new ExprSlot(expression));
             }
 
         setChanged();

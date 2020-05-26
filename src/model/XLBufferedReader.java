@@ -18,10 +18,10 @@ public class XLBufferedReader extends BufferedReader {
                 String string = readLine();
                 String[] split= string.split("=");
                 if (split.length>1){
-                    sheet.insertExpression(split[0],split[1]);
+                    sheet.tryInsertExpression(split[0],split[1]);
 
                 }else {
-                    sheet.insertExpression(split[0],"");
+                    sheet.tryInsertExpression(split[0],"");
                 }
             }
         } catch (Exception e) {

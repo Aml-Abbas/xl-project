@@ -16,7 +16,6 @@ import java.awt.event.MouseEvent;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
 import javax.swing.JFrame;
@@ -137,8 +136,9 @@ public class XL extends JFrame implements Printable, Observer {
         public void mouseClicked(MouseEvent e) {
             statusLabel.setText("");
             SheetPanel sheetPanel = (SheetPanel) XL.this.sheetPanel;
+            String previousValue = sheet.getString(sheetPanel.getPreviousAddress());
             try {
-                sheet.insertExpression(
+                sheet.tryInsertExpression(
                         sheetPanel.getPreviousAddress(),
                         editor.getText().trim()
                         );
@@ -146,6 +146,7 @@ public class XL extends JFrame implements Printable, Observer {
             } catch (Exception exception) {
                 statusLabel.setText(exception.getMessage());
                 statusLabel.setText("");
+                editor.setText(previousValue);
             }
             String value = sheet.getString(sheetPanel.getCurrentAddress());
             editor.setText(value);
@@ -159,7 +160,7 @@ public class XL extends JFrame implements Printable, Observer {
             statusLabel.setText("");
             String currentAddress = ((SheetPanel) sheetPanel).getCurrentAddress();
             try {
-                sheet.insertExpression(currentAddress, editor.getText());
+                sheet.tryInsertExpression(currentAddress, editor.getText());
             } catch (Exception e1) {
                 statusLabel.setText(e1.getMessage());
             }
